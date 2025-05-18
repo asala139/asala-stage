@@ -11,12 +11,11 @@ __DIR__ = os.path.dirname(os.path.abspath(__file__))
 def load_complete_dataframe(df_input):
     df_global = []
     for f in os.listdir(df_input):
-        # Estrai l'anno dal nome del file
-        year = int(f.split('.')[0])
+        year = int(f.split('.')[0]) # estrai anno
 
         df_years = pd.read_csv(df_input + f, index_col=False)
 
-        df_years['years'] = year
+        df_years['years'] = year # aggiungi colonna con anno
     
         pd.set_option('future.no_silent_downcasting', True)
 
@@ -35,74 +34,52 @@ def load_complete_dataframe(df_input):
     return df_global
 
 def add_labels_to_dataset(df_global, row_labels='Utile/perdita di esercizio [utile netto]', company_column='Ragione socialeCaratteri latini', year_column='years'):
-    dfs = []  # Lista per memorizzare i DataFrame con le etichette
-
-    # Itera su ogni azienda unica
-    for company in df_global[company_column].unique():
+    dfs = [] 
+    for company in df_global[company_column].unique(): # per ogni azienda
         df = df_global[df_global[company_column] == company].copy()
 
-        # Ordina il DataFrame per anno
-        df = df.sort_values(by=year_column)
+        df = df.sort_values(by=year_column) # ordina per anno
 
-        # Inizializza variabili
         last_utile = None
         labels = []
 
-        # Itera sulle righe del DataFrame
         for _, row in df.iterrows():
             current_utile = row[row_labels]
-
-            # Gestione del primo valore
             if last_utile is None:
                 last_utile = current_utile
-                labels.append(-1)  # Etichetta iniziale
+                labels.append(-1) # prima riga
                 continue
-
-            # Confronta i valori e assegna l'etichetta
             if current_utile >= last_utile:
-                labels.append(1)
+                labels.append(1) # utile in crescita
             else:
-                labels.append(0)
-
-            # Aggiorna il valore precedente
+                labels.append(0) # utile in calo
             last_utile = current_utile
-
-        # Aggiungi le etichette al DataFrame
         df['labels ' + row_labels] = labels
         dfs.append(df)
-
-    # Concatena tutti i DataFrame
+    
     df_global = pd.concat(dfs)
 
-    # Rimuovi l'ultimo anno, se necessario
     last_year = df_global[year_column].max()
     df_global = df_global[df_global[year_column] != last_year]
 
     return df_global
 
-def clean_columns(df, columns):
-    # Pulisce le colonne specificate sostituendo valori non numerici con NaN e riempiendo i NaN con 0
+def clean_columns(df, columns): # sostituisce valori nulli 
     zero_imputer = SimpleImputer(strategy='constant', fill_value=0)
     for col in columns:
         if col in df.columns:
-            # Sostituisci valori non numerici con NaN
             df[col] = df[col].replace(["n.d.", "n.s.", "n.a."], np.nan).astype(float)
-            # Riempi i valori mancanti con 0
             df[[col]] = zero_imputer.fit_transform(df[[col]])
     return df
 
 def process_dataset(df_input, output_file, columns_to_clean):
-    # Carica il dataset
     df_global = load_complete_dataframe(df_input)
 
-    # Pulisci le colonne specificate
     df_global = clean_columns(df_global, columns_to_clean)
 
-    # Aggiungi le etichette
     for column in columns_to_clean:
         df_global = add_labels_to_dataset(df_global, row_labels=column)
 
-    # Salva il risultato in un file CSV
     df_global.to_csv(output_file, index=False)
     print(f"Dataset elaborato e salvato in: {output_file}")
 
