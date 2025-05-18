@@ -66,17 +66,17 @@ def calculate_null_values(df_global, output_file, num_companies, num_years, star
 # ITA
 df_input_ita = __DIR__ + "/Datasets/Orbis-Dataset/Numeric/ITA/"
 df_global_ita = load_complete_dataframe(df_input_ita)
-output_file_ita = __DIR__ + "/null_values_ita.csv"
+output_file_ita = __DIR__ + "/null_values/null_values_ita.csv"
 calculate_null_values(df_global_ita, output_file_ita, num_companies=362, num_years=30, start_year=1995)
 
 # EU
 df_input_eu = __DIR__ + "/Datasets/Orbis-Dataset/Numeric/EU_27/by_years/"
 df_global_eu = load_complete_dataframe(df_input_eu)
-output_file_eu = "/Users/anna/python/with_venv/stage/null_values_eu.csv"
+output_file_eu = __DIR__ + "/null_values/null_values_eu.csv"
 calculate_null_values(df_global_eu, output_file_eu, num_companies=2000, num_years=30, start_year=1995)
 
 # USA
 df_input_usa = __DIR__ + "/Datasets/Orbis-Dataset/Numeric/USA/by_years/"
 df_global_usa = load_complete_dataframe(df_input_usa)
-output_file_usa = "/Users/anna/python/with_venv/stage/null_values_usa.csv"
+output_file_usa = __DIR__ + "/null_values/null_values_usa.csv"
 calculate_null_values(df_global_usa, output_file_usa, num_companies=2000, num_years=30, start_year=1995)
