@@ -7,7 +7,6 @@ from sklearn.impute import SimpleImputer
 os.system('clear')
 __DIR__ = os.path.dirname(os.path.abspath(__file__))
 
-
 def load_complete_dataframe(df_input):
     df_global = []
     for f in os.listdir(df_input):
@@ -59,8 +58,8 @@ def add_labels_to_dataset(df_global, row_labels='Utile/perdita di esercizio [uti
     
     df_global = pd.concat(dfs)
 
-    last_year = df_global[year_column].max()
-    df_global = df_global[df_global[year_column] != last_year]
+    #last_year = df_global[year_column].max()
+    #df_global = df_global[df_global[year_column] != last_year]
 
     return df_global
 
