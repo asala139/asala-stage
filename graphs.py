@@ -29,7 +29,7 @@ col = "EBITDA"
 #col = "Redditività del totale Attivo (ROA) - Netto"
 
 #sostituire n.d. con NaN
-df[col] = df[col].replace("n.d.", np.nan).astype(float)
+df[col] = df[col].replace(["n.d.", "n.s.", "n.a."], np.nan).astype(float)
 
 #3 metodi 
 df_zero = df.copy()
