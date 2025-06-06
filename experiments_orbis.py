@@ -35,11 +35,9 @@ ds = ld.load_data_by_years_orbis(1998, 2023, dir=__DIR__ + "/Datasets/Orbis-Data
 
 #ds = ds[ds['Inactive']=='No']
 
-#ds.to_csv(__DIR__ + "/dataset-before.csv", index=False)
-
 #ds = ml_ut.base_preprocessing_for_classification(ds) #zero
-#ds = ml_ut.base_preprocessing_for_classification(ds, insertion=1) #mean
-ds = ml_ut.base_preprocessing_for_classification(ds, insertion=2) #median
+ds = ml_ut.base_preprocessing_for_classification(ds, insertion=1) #mean
+#ds = ml_ut.base_preprocessing_for_classification(ds, insertion=2) #median
 
 import sklearn.ensemble as ensemble
 import sklearn.metrics as metrics
@@ -62,13 +60,26 @@ for c in ds.columns:
             continue
         columns_remove.append(c)
 
-#columns_remove.append(["Data chiusura", "Anno fiscale", "Trimestre", "Periodo di competenza", "Stato revisione/audit", "Status bilancio", "Principi contabili", "Fonte dati di bilancio", "Unità originale", "Valuta originale"])
 columns_remove.append('Anno fiscale')
 columns_remove.append('Trimestre')
 columns_remove.append('Periodo di competenza')
 ds = prec.remove_non_numeric_features(ds, columns_remove)
 
-#ds.to_csv(__DIR__ + "/dataset-after.csv", index=False)
+### null values ###
+#nulls_df = pd.read_csv(__DIR__ + "/null_values/null_values_ita.csv") #ita
+#nulls_df = pd.read_csv(__DIR__ + "/null_values/null_values_eu.csv") #eu
+nulls_df = pd.read_csv(__DIR__ + "/null_values/null_values_usa.csv") #usa
+
+#calcolo delle colonne da eliminare
+percent_cols = [col for col in nulls_df.columns if col.startswith('% Nulli') and int(col.split()[-1]) >= 1998]
+columns_to_drop = nulls_df[nulls_df[percent_cols].gt(90).any(axis=1)]['Nome Colonna'].tolist()
+#columns_to_drop = nulls_df[nulls_df[percent_cols].gt(75).any(axis=1)]['Nome Colonna'].tolist()
+#columns_to_drop = nulls_df[nulls_df[percent_cols].gt(50).any(axis=1)]['Nome Colonna'].tolist()
+#columns_to_drop = nulls_df[nulls_df[percent_cols].gt(25).any(axis=1)]['Nome Colonna'].tolist()
+
+#elimino le colonne
+ds = ds.drop(columns=[col for col in columns_to_drop if col in ds.columns])
+######
 
 print(ds.shape)
 
