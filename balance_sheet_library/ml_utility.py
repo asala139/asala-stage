@@ -173,6 +173,16 @@ def train_model_for_xai(model, ds, remove_zero_with_threshold=False, threshold=1
     X_Train = X_Train.drop(["years", "labels"], axis=1)
     X_Train = remove_non_numeric_features(X_Train)
 
+    #filtro righe con label -1
+    mask_train = y_train != -1
+    X_Train = X_Train[mask_train]
+    y_train = y_train[mask_train]
+
+    mask_test = y_test != -1
+    X_Test = X_Test[mask_test]
+    y_test = y_test[mask_test]
+    #fine filtro
+
     if remove_zero_with_threshold:
         X_Train = remove_absence_value(X_Train, threshold)
         X_Test = remove_absence_value(X_Test, threshold)
@@ -188,4 +198,4 @@ def train_model_for_xai(model, ds, remove_zero_with_threshold=False, threshold=1
         with open(labels_path, 'wb') as f:
             pickle.dump(y_test, f)
 
-    return model, X_Test, y_test
+    return model, X_Test, y_test, X_Train
