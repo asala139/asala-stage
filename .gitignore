@@ -3,5 +3,4 @@ Codice/
 StreamlitAppTesi-Zanotti-main/
 Orbis/
 .DS_Store
-classificazioni.py
-results-all.xlsx
+xai2.py
